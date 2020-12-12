@@ -1,26 +1,19 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { Provider } from 'react-redux'
+import { ConfigProvider } from 'antd'
+import 'react-bootstrap'
+import Routes from './Routes'
+import store from './dataStore/store'
+import Spanish from 'antd/lib/locale/es_ES'
 
-function App() {
+function App(): React.ReactElement {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          THIS IS A FUCK REACT TYPESCRIPT APPLICATION
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Provider store={store}>
+      <ConfigProvider locale={Spanish}>
+        <Routes />
+      </ConfigProvider>
+    </Provider>
+  )
 }
 
-export default App;
+export default App

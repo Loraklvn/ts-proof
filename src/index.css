@@ -1,13 +1,46 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.circle-btn {
+  height: 200px;
+  width: 200px;
+  border-radius: 50%;
+  border: 1px solid black;
+}
+a{
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: none;
+}
+.btn-link:hover{
+    text-decoration: none;
+}
+/* .main {
+  height: 100vh; } */
+
+@media (max-width: 766px) {
+  .circle-btn {
+    height: 180px;
+    width: 180px; }
+ }
+@media (max-width: 600px) {
+  html {
+    font-size: 13px; }
+
+  .circle-btn {
+    height: 150px;
+    width: 150px; }
+  }
+/*--------------------------------------------------
+//          NEW CLIENT SECTION STYLE
+---------------------------------------------------*/
+.container-form {
+  margin-top: auto;
+  margin-bottom: auto; }
+
+/*# sourceMappingURL=style.css.map */
+.paymentMade-container{
+  height: 100vh;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.link {
+  font-size: 1rem;
 }

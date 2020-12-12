@@ -1,0 +1,8 @@
+export const PATH_HOME = '/'
+export const PATH_LOGIN = '/login'
+export const PATH_REGISTER_CLIENT = '/registrar_cliente'
+export const PATH_REGISTER_PAYMENT = '/registrar_pago'
+export const PATH_REGISTER_PAYMENT_INFO = '/registrar_pago/:id'
+export const PATH_CLIENTS_LIST = '/lista_clientes'
+export const PATH_CLIENT_DETAILS = '/lista_clientes/:id'
+export const PATH_CLIENT_PAYMENT_HISTORY = '/lista_clientes/historial_pagos/:id'
