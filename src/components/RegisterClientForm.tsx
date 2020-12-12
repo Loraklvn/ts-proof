@@ -12,10 +12,12 @@ type PropTypes = {
     data: RegisterClientData,
     e: React.BaseSyntheticEvent | undefined
   ) => void
+  isLoading: boolean
 }
 
 const RegisterClientForm = ({
   handleRegisterClientData,
+  isLoading,
 }: PropTypes): React.ReactElement => {
   const [isDateSelected, setIsDateSelected] = useState(false)
   const [showInitialDateRequired, setShowInitialDateRequired] = useState(false)
@@ -247,7 +249,7 @@ const RegisterClientForm = ({
           </span>
         </Form.Group>
       </Form.Row>
-      <Button variant={'success'} type={'submit'}>
+      <Button variant={'success'} type={'submit'} disabled={isLoading}>
         Registrar
       </Button>
       <Link to={'/'} className={'btn btn-danger ml-2'}>

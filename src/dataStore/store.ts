@@ -1,13 +1,19 @@
 import {applyMiddleware, combineReducers, compose, createStore} from 'redux'
 import thunk from 'redux-thunk'
 import clientsReducer, { ClientsState } from './clientsDuck';
+import expensesReducer, { ExpensesState } from './expensesDuck';
+import squareReducer, { SquarePaymentsState } from './squarePaymentsDuck';
 
 const rootReducer = combineReducers({
-  clients: clientsReducer
+  clients: clientsReducer,
+  square: squareReducer,
+  expenses: expensesReducer
 })
 
 export type StoreState = {
   clients: ClientsState
+  square: SquarePaymentsState
+  expenses: ExpensesState
 }
 
 const composeEnhancers =

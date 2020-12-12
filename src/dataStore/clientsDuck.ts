@@ -38,51 +38,56 @@ export type ClientData = {
 export type ClientsState = {
     clients: ClientData[]
     clientData: ClientData
+    lastClientPaid: ClientData
     paymentHistory: PaymentHistory[]
-    showClientSavedNotification: boolean
+}
+
+export const initialClientData = {
+    ID: '',
+    NOMBRES: '',
+    APELLIDOS: '',
+    APODO: '',
+    ATRASADO: false,
+    INTERES: 0,
+    CEDULA: '',
+    TELEFONO: '',
+    IMAGEN: '',
+    MONTO: 0,
+    MONTO_TOTAL: 0,
+    MONTO_RESTANTE: 0,
+    CUOTA_SEMANAL: 0,
+    SEMANAS_RESTANTES: 0,
+    FECHA: '',
+    SEMANAS: 0,
+    DIA_PAGO: '',
+    INICIO_PAGO: '',
+    PAYMENT_HISTORY: [],
+    PAYMENT_DATES: []
 }
  
 const initialSate = {
     clients: [],
-    clientData: {
-        ID: '',
-        NOMBRES: '',
-        APELLIDOS: '',
-        APODO: '',
-        ATRASADO: false,
-        INTERES: 0,
-        CEDULA: '',
-        TELEFONO: '',
-        IMAGEN: '',
-        MONTO: 0,
-        MONTO_TOTAL: 0,
-        MONTO_RESTANTE: 0,
-        CUOTA_SEMANAL: 0,
-        SEMANAS_RESTANTES: 0,
-        FECHA: '',
-        SEMANAS: 0,
-        DIA_PAGO: '',
-        INICIO_PAGO: '',
-        PAYMENT_HISTORY: [],
-        PAYMENT_DATES: []
-    },
+    clientData: initialClientData,
     paymentHistory: [],
-    showClientSavedNotification: false,
+    lastClientPaid: initialClientData
 }
 
 //CONSTANTES
 const SET_CLIENTS_LIST = 'SET_CLIENTS_LIST';
-const SHOW_CLIENT_SAVED_NOTIFICATION = 'SHOW_CLIENT_SAVED_NOTIFICATION';
 const SET_CLIENT_DETAILS = 'SET_CLIENT_DETAILS';
+const SET_LAST_CLIENT_PAID = 'SET_LAST_CLIENT_PAID';
+const CLEAR_CLIENT_STATE = 'CLEAR_CLIENT_STATE';
 
-export default function clientsReducer( state = initialSate, action: ActionClientsType): ClientsState {
+export default function clientsReducer( state = initialSate, action: ClientsTypeAction): ClientsState {
     switch (action.type) {
         case SET_CLIENTS_LIST:
             return {...state, clients: action.clients}
-        case SHOW_CLIENT_SAVED_NOTIFICATION:
-            return {...state, showClientSavedNotification: action.visible}
         case SET_CLIENT_DETAILS:
             return {...state, clientData: action.clientData}
+        case CLEAR_CLIENT_STATE:
+            return {...state, clientData: initialClientData}
+        case SET_LAST_CLIENT_PAID:
+            return {...state, lastClientPaid: action.lastClientPaid}
         default:
             return state
     }
@@ -100,20 +105,6 @@ export const setClients = (clients: ClientData[] ): SetClientsAction => {
     }
 }
 
-type ShowClientSavedNotificationAction = {
-    type:  typeof SHOW_CLIENT_SAVED_NOTIFICATION,
-    visible: boolean
-}
-
-export const showClientSavedNotification = (
-    visible: boolean
- ): ShowClientSavedNotificationAction => {
-    return {
-        type: SHOW_CLIENT_SAVED_NOTIFICATION,
-        visible
-    }
-}
-
 type SetClientDetailsAction = {
     type: typeof SET_CLIENT_DETAILS,
     clientData: ClientData
@@ -126,7 +117,30 @@ export const setClientDetails = (clientData: ClientData): SetClientDetailsAction
     }
 }
 
-type ActionClientsType = 
+type ClearClientsStateAction = {
+    type: typeof CLEAR_CLIENT_STATE
+}
+
+export const clearClientsState = (): ClearClientsStateAction => {
+    return {
+        type: CLEAR_CLIENT_STATE
+    }
+}
+
+type SetLastClientPaidAction = {
+    type: typeof SET_LAST_CLIENT_PAID
+    lastClientPaid: ClientData
+}
+
+export const setLastClientPaid = (lastClientPaid: ClientData): SetLastClientPaidAction => {
+    return {
+        type: SET_LAST_CLIENT_PAID,
+        lastClientPaid
+    }
+}
+
+type ClientsTypeAction = 
     | SetClientsAction
-    | ShowClientSavedNotificationAction
     | SetClientDetailsAction
+    | ClearClientsStateAction
+    | SetLastClientPaidAction

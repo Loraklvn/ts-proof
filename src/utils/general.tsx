@@ -1,6 +1,10 @@
 import moment from 'moment'
 import { notification } from 'antd'
-import { ClientData, PaymentDates } from '../dataStore/clientsDuck'
+import {
+  ClientData,
+  PaymentDates,
+  PaymentHistory,
+} from '../dataStore/clientsDuck'
 
 export const getPaymentDates = (
   semanas: number,
@@ -31,18 +35,6 @@ export const getPaymentDates = (
   }))
 }
 
-export const sortByLastName = (a: ClientData, b: ClientData): number => {
-  const ApellidoA = a.APELLIDOS.toUpperCase()
-  const ApellidoB = b.APELLIDOS.toUpperCase()
-  let comparison = 0
-  if (ApellidoA > ApellidoB) {
-    comparison = 1
-  } else if (ApellidoA < ApellidoB) {
-    comparison = -1
-  }
-  return comparison
-}
-
 export const getNumberFormat = (num: number): string => {
   return num.toLocaleString('en', {
     minimumFractionDigits: 2,
@@ -66,12 +58,14 @@ export const currentDate = `${
   date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth()
 }/${date.getFullYear()}`
 
+export const dateToBeSort = `${moment().year()}${
+  moment().month() + 1 < 10 ? '0' + moment().month() + 1 : moment().month() + 1
+}${moment().date() < 10 ? '0' + moment().date() : moment().date()}`
+
 export const createReceiptFunc = (
   clientData: ClientData,
-  totalAmount: number
+  lastPaymentData: PaymentHistory
 ): string => {
-  const numCuota = clientData.SEMANAS - clientData.SEMANAS_RESTANTES
-
   const receipt = `
         RECIBO DE PAGO
     ----------------------------
@@ -85,9 +79,9 @@ export const createReceiptFunc = (
     ${clientData.NOMBRES} ${clientData.APELLIDOS}
     ----------------------------
     Tipo de Moneda: RD
-    Num. de la cuota: ${numCuota ? numCuota : 1}
+    Num. de la cuota: ${lastPaymentData.RECIBO_NUM}
     Valor de la cuota: RD$${getNumberFormat(clientData.CUOTA_SEMANAL)}
-    Monto Total Recibido: RD$${getNumberFormat(totalAmount)}
+    Monto Total Recibido: RD$${getNumberFormat(lastPaymentData.MONTO_RECIBIDO)}
     Total del Prestamo: RD$${getNumberFormat(clientData.MONTO_TOTAL)}
     Pendiente: RD$${getNumberFormat(clientData.MONTO_RESTANTE)}
   `

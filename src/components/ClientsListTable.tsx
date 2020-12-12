@@ -13,13 +13,12 @@ const ClientsListTable = (): React.ReactElement => {
   const { clients } = useSelector((store: StoreState) => store.clients)
 
   useEffect(() => {
-    verifyClientDelaymentApi(clients)
     dispatch(getClientListApi())
   }, [dispatch])
 
   return (
     <>
-      <Table striped hover>
+      <Table style={{ fontSize: '1.05rem' }} striped hover>
         <thead>
           <tr>
             <th>#</th>
@@ -30,6 +29,7 @@ const ClientsListTable = (): React.ReactElement => {
           </tr>
         </thead>
         <tbody>
+          {verifyClientDelaymentApi(clients)}
           {clients?.map((client: ClientData, i) => {
             return (
               <tr
@@ -47,7 +47,10 @@ const ClientsListTable = (): React.ReactElement => {
                 </td>
                 <td>{client.APELLIDOS}</td>
                 <td>{client.MONTO}</td>
-                <td>{client.SEMANAS_RESTANTES}</td>
+                <td>
+                  {client.SEMANAS_RESTANTES}
+                  {client.SEMANAS_RESTANTES > 1 ? ' semanas' : ' semana'}
+                </td>
               </tr>
             )
           })}

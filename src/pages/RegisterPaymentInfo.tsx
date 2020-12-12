@@ -8,6 +8,8 @@ import { getClientDetailsApi } from '../utils/api'
 import { Title1 } from '../components/CustomTypography'
 import RegisterPaymentForm from '../components/RegisterPaymentForm'
 import { getNumberFormat } from '../utils/general'
+import CustomSpinner from '../components/CustomSpinner'
+import { clearClientsState } from '../dataStore/clientsDuck'
 
 const FormControlStylrd = styled(FormControl)`
   font-weight: 700;
@@ -28,7 +30,14 @@ const RegisterPaymentInfo = (): React.ReactElement => {
 
   useEffect(() => {
     dispatch(getClientDetailsApi(id))
+    return () => {
+      dispatch(clearClientsState())
+    }
   }, [])
+
+  if(!clientData.ID) {
+    return <CustomSpinner />
+  }
 
   return (
     <>

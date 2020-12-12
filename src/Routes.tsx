@@ -6,7 +6,10 @@ import {
   PATH_CLIENT_DETAILS,
   PATH_CLIENT_PAYMENT_HISTORY,
   PATH_CLIENTS_LIST,
+  PATH_EXPENSES,
   PATH_HOME,
+  PATH_LOGIN,
+  PATH_PAYMENT_SQUARE,
   PATH_REGISTER_CLIENT,
   PATH_REGISTER_PAYMENT,
   PATH_REGISTER_PAYMENT_INFO,
@@ -18,12 +21,14 @@ import Login from './pages/Login'
 import RegisterClient from './pages/RegisterClient'
 import RegisterPayment from './pages/RegisterPayment'
 import ClientPaymentHistory from './components/ClientPaymentHistory'
+import PaymentSquare from './pages/PaymentSquare'
+import Expenses from './pages/Expenses'
 
 const Routes = (): React.ReactElement => {
   return (
     <Router>
       <Switch>
-        <Route exact path="/login" component={Login} />
+        <Route exact path={PATH_LOGIN} component={Login} />
         <ProtectedRoutesWrapper>
           <Route exact path={PATH_HOME} component={Home} />
           <Route exact path={PATH_REGISTER_CLIENT} component={RegisterClient} />
@@ -44,6 +49,8 @@ const Routes = (): React.ReactElement => {
             path={PATH_CLIENT_PAYMENT_HISTORY}
             component={ClientPaymentHistory}
           />
+          <Route exact path={PATH_PAYMENT_SQUARE} component={PaymentSquare} />
+          <Route exact path={PATH_EXPENSES} component={Expenses} />
         </ProtectedRoutesWrapper>
       </Switch>
     </Router>

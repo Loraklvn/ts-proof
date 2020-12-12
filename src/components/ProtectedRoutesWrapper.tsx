@@ -3,7 +3,15 @@ import Navbar from 'react-bootstrap/Navbar'
 import Container from 'react-bootstrap/Container'
 import { Nav } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
-import { PATH_CLIENTS_LIST, PATH_HOME } from '../constants/routes'
+import {
+  PATH_CLIENTS_LIST,
+  PATH_EXPENSES,
+  PATH_HOME,
+  PATH_LOGIN,
+  PATH_PAYMENT_SQUARE,
+} from '../constants/routes'
+import { auth } from '../firebase'
+import { closeSessionApi } from '../utils/api'
 
 type PropsType = {
   children: React.ReactElement[] | React.ReactElement
@@ -12,11 +20,20 @@ type PropsType = {
 const ProtectedRoutesWrapper = ({
   children,
 }: PropsType): React.ReactElement => {
+
+  auth.onAuthStateChanged(function(user) {
+    if(!user){
+      window.location.pathname = PATH_LOGIN
+    }
+  });
+
+  const handleCloseSession = () => closeSessionApi()
+
   return (
     <>
       <Navbar variant="dark" style={{ backgroundColor: '#11121479' }}>
         <Container>
-          <Navbar.Brand href="#">Navbar</Navbar.Brand>
+          <Navbar.Brand href="#">Company Name</Navbar.Brand>
           <Nav>
             <NavLink to={PATH_HOME} className="text-light p-1 link">
               Inicio
@@ -24,13 +41,13 @@ const ProtectedRoutesWrapper = ({
             <NavLink to={PATH_CLIENTS_LIST} className="text-light p-1 link">
               Clientes
             </NavLink>
-            <NavLink to="/" className="text-light p-1 link">
+            <NavLink to={PATH_PAYMENT_SQUARE} className="text-light p-1 link">
               Pagos
             </NavLink>
-            <NavLink to="/" className="text-light p-1 link">
+            <NavLink to={PATH_EXPENSES} className="text-light p-1 link">
               Gastos
             </NavLink>
-            <NavLink to="/" className="text-light p-1 link">
+            <NavLink to={''}  onClick={handleCloseSession} className="text-light p-1 link">
               Cerrar
             </NavLink>
           </Nav>

@@ -2,7 +2,7 @@ import React from 'react'
 import ClientsListTable from '../components/ClientsListTable'
 import { CustomDiv } from '../components/CustomElements'
 import { Title1 } from '../components/CustomTypography'
-import PaymentDayFilter from '../components/PaymentDayFilter'
+import FilterByPaymentDay from '../components/FilterByPatmentDay'
 import SearchBar from '../components/SearchBar'
 
 const Clients = (): React.ReactElement => {
@@ -12,7 +12,7 @@ const Clients = (): React.ReactElement => {
         <Title1>Lista de Clientes</Title1>
         <SearchBar />
       </CustomDiv>
-      <PaymentDayFilter />
+      <FilterByPaymentDay />
       <ClientsListTable />
     </>
   )

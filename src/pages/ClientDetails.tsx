@@ -4,10 +4,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { CustomDiv } from '../components/CustomElements'
+import CustomSpinner from '../components/CustomSpinner'
 import { Title2 } from '../components/CustomTypography'
 import { PATH_CLIENTS_LIST } from '../constants/routes'
+import { clearClientsState } from '../dataStore/clientsDuck'
 import { StoreState } from '../dataStore/store'
-import { getClientDetailsApi } from '../utils/api'
+import { getClientDetailsApi, removeClientApi } from '../utils/api'
 import { getNumberFormat } from '../utils/general'
 
 const FormControlStylrd = styled(FormControl)`
@@ -24,14 +26,28 @@ const ClientDetails = (): React.ReactElement => {
 
   useEffect(() => {
     dispatch(getClientDetailsApi(id))
+    return () => {
+      dispatch(clearClientsState())
+    }
   }, [])
+
+  const handleRemoveButton = () => {
+    const confirm = prompt('Intruce "0" si quieres ejecutar esta accion!')
+    if (confirm === '0') {
+      removeClientApi(clientData.ID)
+    }
+  }
+
+  if(!clientData.ID) {
+    return <CustomSpinner />
+  }
 
   return (
     <>
       <CustomDiv>
         <Title2>Datos del cliente</Title2>
         <img
-          src={''}
+          src={clientData.IMAGEN}
           className="mx-4"
           alt="Foto cliente"
           width="100"
@@ -149,7 +165,11 @@ const ClientDetails = (): React.ReactElement => {
         >
           Volver
         </Link>
-        <Button type={'button'} className={'btn btn-secondary ml-2 mb-3'}>
+        <Button
+          type={'button'}
+          className={'btn btn-secondary ml-2 mb-3'}
+          onClick={handleRemoveButton}
+        >
           Eliminar
         </Button>
       </Form>

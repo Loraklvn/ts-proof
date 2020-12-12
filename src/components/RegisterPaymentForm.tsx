@@ -1,12 +1,19 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Col, Form, FormControl } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { PATH_REGISTER_PAYMENT } from '../constants/routes'
 import { ClientData } from '../dataStore/clientsDuck'
 import { StoreState } from '../dataStore/store'
-import { registerPaymentApi, registerPaymentDatesApi } from '../utils/api'
+import {
+  cancelLastPaidApi,
+  getLastClienPaidApi,
+  registerClientBeforeLastPaymentApi,
+  registerPaymentApi,
+  registerPaymentDatesApi,
+  registerPaymentSquareApi,
+} from '../utils/api'
 import { currentDate, showNotification } from '../utils/general'
 
 type FormData = {
@@ -20,9 +27,14 @@ type PropsType = {
 const RegisterPaymentForm = ({
   handleTotalAmountChange,
 }: PropsType): React.ReactElement => {
+  const dispatch = useDispatch()
   const { register, handleSubmit } = useForm()
-  const { clientData } = useSelector((store: StoreState) => store.clients)
+  const { clientData, lastClientPaid } = useSelector((store: StoreState) => store.clients)
   const [totalAmountReceived, setTotalAmountReceived] = useState(0)
+
+  useEffect(() => {
+    dispatch(getLastClienPaidApi())
+  }, [])
 
   const onSubmit = (data: FormData) => {
     if (
@@ -41,24 +53,29 @@ const RegisterPaymentForm = ({
     const MONTO_RESTANTE = clientData.MONTO_RESTANTE - totalAmountReceived
     const RECIBO_NUM = clientData.SEMANAS - SEMANAS_RESTANTES
 
+    const lastPaymentData = {
+      FECHA_RECIBIDO: currentDate,
+      RECIBIDO_POR: data.RECIBIDO_POR,
+      PAGOS_RECIBIDOS: (data.CANTIDAD_CUOTAS as number) * 1,
+      MONTO_RECIBIDO: totalAmountReceived,
+      RECIBO_NUM,
+    }
+
     const newClientData: ClientData = {
       ...clientData,
       SEMANAS_RESTANTES,
       MONTO_RESTANTE,
-      PAYMENT_HISTORY: [
-        ...clientData.PAYMENT_HISTORY,
-        {
-          FECHA_RECIBIDO: currentDate,
-          RECIBIDO_POR: data.RECIBIDO_POR,
-          PAGOS_RECIBIDOS: (data.CANTIDAD_CUOTAS as number) * 1,
-          MONTO_RECIBIDO: totalAmountReceived,
-          RECIBO_NUM,
-        },
-      ],
+      PAYMENT_HISTORY: [...clientData.PAYMENT_HISTORY, { ...lastPaymentData }],
     }
     if (window.confirm('Confirmar Que Quiere Realizar Pago!')) {
+      registerClientBeforeLastPaymentApi(clientData)
       registerPaymentDatesApi(newClientData, data.CANTIDAD_CUOTAS as number)
-      registerPaymentApi(newClientData, totalAmountReceived)
+      registerPaymentApi(newClientData, lastPaymentData)
+      registerPaymentSquareApi(
+        newClientData,
+        data.RECIBIDO_POR,
+        lastPaymentData
+      )
     }
   }
 
@@ -66,6 +83,11 @@ const RegisterPaymentForm = ({
     const totalAmount = clientData.CUOTA_SEMANAL * (value as number)
     handleTotalAmountChange(totalAmount)
     setTotalAmountReceived(totalAmount)
+  }
+
+  const handleCancelPayment = () => {
+    if(window.confirm('Estás seuro?'))
+    return dispatch(cancelLastPaidApi(clientData.ID))
   }
 
   return (
@@ -93,16 +115,25 @@ const RegisterPaymentForm = ({
               defaultValue={'casa'}
               ref={register}
             >
-              <option value={'casa'}>Casa</option>
+              <option value={'Casa'}>Casa</option>
             </FormControl>
           </Form.Group>
         </Form.Row>
         <Button variant={'success'} type={'submit'}>
           Registrar Pago
         </Button>
-        <Link to={PATH_REGISTER_PAYMENT} className={'btn btn-danger ml-2'}>
+        <Link to={PATH_REGISTER_PAYMENT} className={'btn btn-danger mx-2'}>
           Volver
         </Link>
+        {
+          lastClientPaid.ID === clientData.ID &&
+          <Button 
+            variant={'secondary'} 
+            onClick={handleCancelPayment}
+          >
+            Anular Pago
+          </Button>
+        }
       </Form>
     </>
   )

@@ -1,12 +1,11 @@
-import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { Title1 } from '../components/CustomTypography'
 import { ClientData } from '../dataStore/clientsDuck'
-import { StoreState } from '../dataStore/store'
 import { registerNewClientApi } from '../utils/api'
 import { getPaymentDates, loanDate } from '../utils/general'
 import RegisterClientForm from '../components/RegisterClientForm'
-import { Result } from 'antd'
+import { storageFb } from '../firebase'
 
 export type RegisterClientData = {
   NOMBRES: string
@@ -14,7 +13,7 @@ export type RegisterClientData = {
   APODO: string
   CEDULA: string
   TELEFONO: string
-  IMAGEN: string
+  IMAGEN: File[]
   MONTO: string | number
   SEMANAS: string | number
   INTERES: string | number
@@ -24,9 +23,7 @@ export type RegisterClientData = {
 
 const RegisterClient = (): React.ReactElement => {
   const dispatch = useDispatch()
-  const { showClientSavedNotification } = useSelector(
-    (store: StoreState) => store.clients
-  )
+  const [loading, setLoading] = useState(false)
 
   const stringToNumber = (str: string): number => parseFloat(str)
 
@@ -34,6 +31,7 @@ const RegisterClient = (): React.ReactElement => {
     data: RegisterClientData,
     e: React.BaseSyntheticEvent | undefined
   ) => {
+    setLoading(true)
     const INTERES = ((data.MONTO as number) * (data.INTERES as number)) / 100
     const MONTO_TOTAL = (INTERES as number) * 3 + (data.MONTO as number) * 1
     const PAYMENT_DATES = getPaymentDates(
@@ -56,22 +54,35 @@ const RegisterClient = (): React.ReactElement => {
       PAYMENT_HISTORY: [],
       PAYMENT_DATES,
     }
-    dispatch(registerNewClientApi(clientData, e))
+
+    const lector = new FileReader()
+    const archivo = data?.IMAGEN[0]
+    if (archivo) {
+      lector.readAsDataURL(archivo as Blob)
+      const subirImg = storageFb.child('cedulas/' + archivo.name).put(archivo)
+      subirImg.on(
+        'state_changed',
+        () => {},
+        (error) => error,
+        async () => {
+          const res = await subirImg.snapshot.ref.getDownloadURL()
+          setLoading(false)
+          dispatch(registerNewClientApi(clientData, e, res))
+        }
+      )
+    } else {
+      setLoading(false)
+      dispatch(registerNewClientApi(clientData, e, ''))
+    }
   }
 
   return (
     <>
       <Title1 className="mb-5">Registrar Nuevo Cliente</Title1>
-      {!showClientSavedNotification ? (
-        <RegisterClientForm
-          handleRegisterClientData={handleRegisterClientData}
-        />
-      ) : (
-        <Result
-          status="success"
-          title={'Ciente Ha Sido Registrado Correctamente!'}
-        />
-      )}
+      <RegisterClientForm
+        isLoading={loading}
+        handleRegisterClientData={handleRegisterClientData}
+      />
     </>
   )
 }
